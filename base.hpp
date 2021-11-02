@@ -2,6 +2,7 @@
 #define __BASE_HPP__
 
 #include <string>
+#include <cmath>
 
 class Base {
     public:
