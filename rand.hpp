@@ -6,7 +6,7 @@
 #include <ctime>
 class Rand : public Base {
     public:
-        Rand(double value) : Base() { 
+        Rand() : Base() { 
 		srand(time(0));
 		x = rand() % 100;
 	 }

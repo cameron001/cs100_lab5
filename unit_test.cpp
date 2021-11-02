@@ -9,9 +9,10 @@
 #include "div.hpp"
 //#include "SevenMultMock.hpp"
 
-//TEST(rand_class, output){
-//	Op* test = new rand();
-//	EXPECT_
+TEST(rand_class, output){
+	Rand* test = new Rand();
+	EXPECT_TRUE((test->evaluate() > -1) && (test->evaluate() < 100));
+}
 TEST(div_class, correct_output){
         Base* three = new Op(4);
         Base* seven = new Op(2);
