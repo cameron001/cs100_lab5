@@ -10,6 +10,9 @@ ADD_EXECUTABLE(obj
 	op.hpp
 	sub.hpp
 	exp.hpp
+	mult.hpp
+	div.hpp
+	rand.hpp
 )
 
 ADD_EXECUTABLE(test

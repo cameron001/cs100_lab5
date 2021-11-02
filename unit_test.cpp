@@ -4,7 +4,105 @@
 #include "exp.hpp"
 #include "add.hpp"
 #include "sub.hpp"
-#include "SevenMultMock.hpp"
+#include "rand.hpp"
+#include "mult.hpp"
+#include "div.hpp"
+//#include "SevenMultMock.hpp"
+
+TEST(rand_class, output){
+	Rand* test = new Rand();
+	EXPECT_TRUE((test->evaluate() > -1) && (test->evaluate() < 100));
+}
+TEST(div_class, correct_output){
+        Base* three = new Op(4);
+        Base* seven = new Op(2);
+        Base* divide = new Div(three, seven);
+        EXPECT_DOUBLE_EQ(divide->evaluate(), 2);
+        EXPECT_EQ(divide->stringify(), "(4.000000/2.000000)");
+}
+
+TEST(div_class, usezeros){
+        Base* input1 = new Op(0);
+        Base* input2 = new Op(0);
+        Base* divide = new Div(input1, input2);
+        EXPECT_DOUBLE_EQ(divide->evaluate(), NAN);
+        EXPECT_EQ(divide->stringify(), "(0.000000/0.000000)");
+}
+TEST(div_class, onenegative){
+        Base* input1 = new Op(-1);
+        Base* input2 = new Op(4);
+        Base* divide = new Div(input2, input1);
+        EXPECT_DOUBLE_EQ(divide->evaluate(), -4);
+        EXPECT_EQ(divide->stringify(), "(4.000000/-1.000000)");
+}
+TEST(div_class, twonegatives){
+        Base* input1 = new Op(-1);
+        Base* input2 = new Op(-4);
+        Base* divide = new Div(input2, input1);
+        EXPECT_DOUBLE_EQ(divide->evaluate(), 4);
+        EXPECT_EQ(divide->stringify(), "(-4.000000/-1.000000)");
+}
+TEST(div_class, decimal){
+        Base* input1 = new Op(3.0333);
+        Base* input2 = new Op(10.098);
+        Base* divide = new Div(input1, input2);
+        EXPECT_DOUBLE_EQ(divide->evaluate(),0.30038621509209745 );
+        EXPECT_EQ(divide->stringify(), "(3.033300/10.098000)");
+}
+TEST(div_class, withaddclass){
+        Base* input1 = new Op(2);
+        Base* input2 = new Op(2);
+        Base* added = new add(input1, input2); //should be 4
+        Base* divide = new Div(input1, added);
+        EXPECT_DOUBLE_EQ(divide->evaluate(), 0.5000000);
+        EXPECT_EQ(divide->stringify(), "(2.000000/(2.000000+2.000000))");
+}
+
+
+TEST(mult_class, correct_output){
+	Base* three = new Op(3);
+	Base* seven = new Op(7);
+	Base* multipl = new mult(three, seven);
+	EXPECT_DOUBLE_EQ(multipl->evaluate(), 21);
+	EXPECT_EQ(multipl->stringify(), "(3.000000*7.000000)");
+}
+
+TEST(mult_class, usezeros){
+        Base* input1 = new Op(0);
+        Base* input2 = new Op(0);
+        Base* multipl = new mult(input1, input2);
+        EXPECT_DOUBLE_EQ(multipl->evaluate(), 0);
+        EXPECT_EQ(multipl->stringify(), "(0.000000*0.000000)");
+} 
+TEST(mult_class, onenegative){
+        Base* input1 = new Op(-1);
+        Base* input2 = new Op(4);
+        Base* multipl = new mult(input1, input2);
+        EXPECT_DOUBLE_EQ(multipl->evaluate(), -4);
+        EXPECT_EQ(multipl->stringify(), "(-1.000000*4.000000)");
+}
+TEST(mult_class, twonegatives){
+        Base* input1 = new Op(-1);
+        Base* input2 = new Op(-4);
+        Base* multipl = new mult(input1, input2);
+        EXPECT_DOUBLE_EQ(multipl->evaluate(), 4);
+        EXPECT_EQ(multipl->stringify(), "(-1.000000*-4.000000)");
+}
+TEST(mult_class, decimal){
+        Base* input1 = new Op(3.0333);
+        Base* input2 = new Op(10.098);
+        Base* multipl = new mult(input1, input2);
+        EXPECT_DOUBLE_EQ(multipl->evaluate(),30.630263400000004 );
+        EXPECT_EQ(multipl->stringify(), "(3.033300*10.098000)");
+}
+TEST(mult_class, withaddclass){
+        Base* input1 = new Op(2);
+        Base* input2 = new Op(2);
+	Base* added = new add(input1, input2); //should be 4
+        Base* multipl = new mult(input1, added);
+        EXPECT_DOUBLE_EQ(multipl->evaluate(), 8);
+        EXPECT_EQ(multipl->stringify(), "(2.000000*(2.000000+2.000000))");
+}
 
 TEST(sub_class, correct_output) {
         Base* three = new Op(3);
@@ -41,10 +139,11 @@ TEST(sub_class, sub_decimal_values) {
 TEST(sub_class, sub_mult) {
 	Base* neg = new Op(2);
 	Base* pos = new Op(2);
-	Base* mult = new sevenMultMock(7,2); //return 14
-	Base* s = new sub(neg, mult); //2 - 14 = -12
+	Base* seven = new Op(7);
+	Base* multi = new mult(seven,pos); //return 14
+	Base* s = new sub(neg, multi); //2 - 14 = -12
 	EXPECT_DOUBLE_EQ(s->evaluate(), -12); 
-	EXPECT_EQ(s->stringify(), "(2.000000-14)");	
+	EXPECT_EQ(s->stringify(), "(2.000000-(7.000000*2.000000))");	
 }
 
 
@@ -83,10 +182,11 @@ TEST(add_class, add_decimal_values) {
 TEST(add_class, add_mult) {
         Base* neg = new Op(2);
         Base* pos = new Op(2);
-        Base* mult = new sevenMultMock(7,2); //return 14
-        Base* a = new add(neg, mult); //2 + 14 = 16
+	Base* seven = new Op(7);
+        Base* multi = new mult(seven,pos); //return 14
+        Base* a = new add(neg, multi); //2 + 14 = 16
         EXPECT_DOUBLE_EQ(a->evaluate(), 16);
-	EXPECT_EQ(a->stringify(), "(2.000000+14)");
+	EXPECT_EQ(a->stringify(), "(2.000000+(7.000000*2.000000))");
 
 }
 
@@ -136,10 +236,11 @@ TEST(exponent_class, decimal_values) {
 TEST(exponent_class, exponent_mult) {
         Base* neg = new Op(2);
         Base* pos = new Op(2);
-        Base* mult = new sevenMultMock(7,2); //return 14
-        Base* ex = new exponent(neg, mult); //2 ** 14 = 16384
+	Base* seven = new Op(7);
+        Base* multi = new mult(seven,pos); //return 14
+        Base* ex = new exponent(neg, multi); //2 ** 14 = 16384
         EXPECT_DOUBLE_EQ(ex->evaluate(), 16384);
-        EXPECT_EQ(ex->stringify(), "(2.000000**14)");
+        EXPECT_EQ(ex->stringify(), "(2.000000**(7.000000*2.000000))");
 }
 
 
